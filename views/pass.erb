@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn your password</title>
+<link type="text/css" rel="stylesheet" href="/bootstrap.min.css"/>
+<style>
+.bad {
+  border:red 3px solid;
+}
+.good {
+  border:green 3px solid;
+}
+input[type=text] {
+  font-size:16px;
+}
+</style>
+<script src="/jquery-1.11.1.min.js"></script>
+<script>
+$(function() {
+  function check(sel, val) {
+    var el = $(sel)
+    el.removeClass("good");
+    el.removeClass("bad");
+    if (el.val() == val) {
+      el.addClass("good");
+      return true;
+    } else {
+      el.addClass("bad");
+      return false;
+    }
+  }
+  $("#checkuser").change(function(e) {
+    check(this, "737498");
+  });
+  $("#checkpass").change(function(e) {
+    check(this, "20090610");
+  });
+  function reset() {
+    $("#checkuser").removeClass("good");
+    $("#checkpass").removeClass("good");
+    $("#checkuser").removeClass("bad");
+    $("#checkpass").removeClass("bad");
+    $("#checkuser").val("");
+    $("#checkpass").val("");
+    $("#status-good").hide();
+    $("#status-bad").hide();
+  }
+  $(".tryagain").click(reset);
+  $("#checkform").submit(function(e) { e.preventDefault();
+    var good = check("#checkuser", "737498");
+    good &= check("#checkpass", "20090610");
+    $("#status-good").hide();
+    $("#status-bad").hide();
+    if (good) {
+      $("#status-good").show();
+    } else {
+      $("#status-bad").show();
+    }
+  });
+});
+</script>
+</head>
+<body>
+<div class="container">
+  <h1>Priscilla Fisher</h1>
+  <p>Priscilla, this is a game from Dad - to help you learn your user/password for kindergarten.</p>
+  <p>Practice below by entering your user name and password.  When you get the combination correct the screen will change.</p>
+  <h3 <% if @success %>class="text-success"<% elsif @notright %>class="text-warning"<% end %>><%= @message %></h3>
+  <p>
+    User name, type: <strong>737498</strong>
+  </p>
+  <p>
+    Password, type: <strong>20090610</strong>
+  </p>
+  <form id="checkform" method="get" action="/check" role="form" autocomplete="off">
+    <div id="status-good" style="display:none">
+      <div class="alert alert-success" role="alert">You got the right answer! <a class="tryagain">try again</a></div>
+    </div>
+    <div id="status-bad" style="display:none">
+      <div class="alert alert-danger" role="alert">Double check your answers. <a class="tryagain">try again</a></div>
+    </div>
+    <div class="form-group">
+      <label>user name</label>
+      <input id="checkuser" name="user" autocomplete="off" type="text" placeholder="737498"/>
+    </div>
+    <div class="form-group">
+      <label>password</label>
+      <input id="checkpass" name="pass" autocomplete="off" type="text" placeholder="20090610"/>
+    </div>
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary" value="Check your answer"/>
+    </div>
+  </form>
+</div>
+</body>
+</html>
