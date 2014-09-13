@@ -17,6 +17,11 @@ input[type=text] {
 </style>
 <script src="/jquery-1.11.1.min.js"></script>
 <script>
+const userStr    = "737498"
+const passStr    = "20090610"
+const userDigits = userStr.split('');
+const passDigits = passStr.split('');
+const MSG = new SpeechSynthesisUtterance();
 $(function() {
   function check(sel, val) {
     var el = $(sel)
@@ -30,11 +35,34 @@ $(function() {
       return false;
     }
   }
+  function say(text) {
+    console.log("say", text);
+    //var msg = new SpeechSynthesisUtterance(text);
+    MSG.text = text;
+    window.speechSynthesis.speak(MSG);
+  }
+  function keypressValidator(e, fullText, inputText) {
+    var input = String.fromCharCode(e.keyCode);
+    if (input >= 0 && input <= 9) {
+      console.log("check ", input, " in ", fullText, " so far: ", inputText);
+      if (fullText.indexOf(input) == -1 || fullText.indexOf(inputText) == -1) {
+        say("Oops " + input + " is incorrect, press the backspace or delete key to try again.");
+      } else {
+        say(input);
+      }
+    }
+  }
+  $("#checkuser").keyup(function(e) {
+    keypressValidator(e, userStr, $("#checkuser").val());
+  });
+  $("#checkpass").keypress(function(e) {
+    keypressValidator(e, passStr, $("#checkpass").val());
+  });
   $("#checkuser").change(function(e) {
-    check(this, "737498");
+    check(this, userStr);
   });
   $("#checkpass").change(function(e) {
-    check(this, "20090610");
+    check(this, passStr);
   });
   function reset() {
     $("#checkuser").removeClass("good");
@@ -45,6 +73,7 @@ $(function() {
     $("#checkpass").val("");
     $("#status-good").hide();
     $("#status-bad").hide();
+    say("Okay Priscilla let's try it again.");
   }
   $(".tryagain").click(reset);
   $("#checkform").submit(function(e) { e.preventDefault();
@@ -53,8 +82,10 @@ $(function() {
     $("#status-good").hide();
     $("#status-bad").hide();
     if (good) {
+      say("You did it!  Great job.");
       $("#status-good").show();
     } else {
+      say("Oops, something isn't right.  Let's try it again.");
       $("#status-bad").show();
     }
   });
